@@ -18,13 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\easyLNC.ScreenStream.OMT\easyLNC.ScreenStream.OMT.csproj" />
+    <ProjectReference Include="..\easyLNC.ScreenStream.OMT\easyLNC.ScreenStream.OMT.csproj" />
     <ProjectReference Include="..\easyLNC.Helper.Direct3D11\easyLNC.Helper.Direct3D11.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="libomtnet">
-      <HintPath>..\..\easyLNC.ScreenStream.OMT\libomtnet.dll</HintPath>
+      <HintPath>..\easyLNC.ScreenStream.OMT\libomtnet.dll</HintPath>
     </Reference>
   </ItemGroup>
 

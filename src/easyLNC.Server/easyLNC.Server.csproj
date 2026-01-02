@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\easyLNC.ScreenStream.OMT\easyLNC.ScreenStream.OMT.csproj" />
+    <ProjectReference Include="..\easyLNC.ScreenStream.OMT\easyLNC.ScreenStream.OMT.csproj" />
     <ProjectReference Include="..\easyLNC.Abstract\easyLNC.Abstract.csproj" />
     <ProjectReference Include="..\easyLNC.Screen.InfoHandler\easyLNC.Screen.InfoHandler.csproj" />
     <ProjectReference Include="..\easyLNC.ScreenCapture.WGC\easyLNC.ScreenCapture.WGC.csproj" />

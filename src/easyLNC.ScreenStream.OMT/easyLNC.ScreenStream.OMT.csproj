@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\easyLNC.Abstract\easyLNC.Abstract.csproj" />
+    <ProjectReference Include="..\easyLNC.Abstract\easyLNC.Abstract.csproj" />
   </ItemGroup>
 
   <ItemGroup>
