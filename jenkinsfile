@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+
+    stages {
+    
+        stage('Setup') {
+            steps {
+                echo "Setup... ${env.TAG_NAME}"
+                checkout scm
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Building...'
+                bat "tet.JenkinsTools.exe semver_check -v ${env.TAG_NAME}"
+				bat "tet.JenkinsTools.exe dotnet_project_build_v2 -v ${env.TAG_NAME}"
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+				bat "tet.JenkinsTools.exe dotnet_solution_test_v2"
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploy Artifact..'
+				bat "tet.JenkinsTools.exe dotnet_artifacts_zip_v2 -v ${env.TAG_NAME}"
+				bat "tet.JenkinsTools.exe dotnet_deploy_v2 -v ${env.TAG_NAME}"
+            }
+        }
+    }
+
+    post { 
+        always { 
+            deleteDir()
+
+            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+            to: '$DEFAULT_RECIPIENTS',
+                subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+        }
+    }
+}

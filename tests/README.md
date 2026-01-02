@@ -1,0 +1,3 @@
+# dotnet.template
+
+dotnet.template

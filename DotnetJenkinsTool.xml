@@ -1,0 +1,20 @@
+<JenkinsTool>
+    <Projects>
+		<DotnetProject>
+			<Path>./src/Server/</Path>
+			<csproj>DevopsWebTools.Server.csproj</csproj>
+			<TargetFrameworks>net7.0</TargetFrameworks>
+			<NugetPackage enabled="false"></NugetPackage>
+			<Publish enabled="true"></Publish>
+			<Doxygen enabled="false" publishWebsite="true">
+				<TemplateName>Dotnet.template.1</TemplateName>
+				<SourceCodePath>./src/</SourceCodePath>
+			</Doxygen>
+			<Docker enabled="true">
+				<DockerFilePath>./Dockerfile </DockerFilePath>
+				<NoCache enabled="false"></NoCache>
+			</Docker>
+		</DotnetProject>
+    </Projects>
+</JenkinsTool>
+

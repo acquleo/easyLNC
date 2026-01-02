@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\easyLNC.ScreenStream.OMT\easyLNC.ScreenStream.OMT.csproj" />
+    <ProjectReference Include="..\easyLNC.Abstract\easyLNC.Abstract.csproj" />
+    <ProjectReference Include="..\easyLNC.Screen.InfoHandler\easyLNC.Screen.InfoHandler.csproj" />
+    <ProjectReference Include="..\easyLNC.ScreenCapture.WGC\easyLNC.ScreenCapture.WGC.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Vanara.PInvoke.User32" Version="4.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\acquleo.Base\acquleo.Base.csproj" />
+    <ProjectReference Include="..\easyLNC.Abstract\easyLNC.Abstract.csproj" />
+    <ProjectReference Include="..\easyLNC.Helper.Direct3D11\easyLNC.Helper.Direct3D11.csproj" />
+  </ItemGroup>
+
+</Project>
