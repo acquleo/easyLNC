@@ -7,10 +7,9 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class MouseMoveMessage : BaseSessionReq
+    public class BaseRes
     {
-        public int ScreenIndex { get; set; }
-        public double AbsoluteX { get; set; }
-        public double AbsoluteY { get; set; }
+        public int ResultCode { get; set; } = 0;
+        
     }
 }

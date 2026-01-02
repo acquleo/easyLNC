@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace easyLNC.Abstract
 {
-    public interface ISessionHandler
+    public interface IClient
     {
-        IEnumerable<IClientSession> GetSessions();
-        IClientSession GetSessionById(string id);
-
+        string Id { get; }
+        event Action<IClient?> OnDisconnected;
     }
 }

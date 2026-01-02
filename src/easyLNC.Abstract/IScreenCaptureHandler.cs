@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Org.BouncyCastle.Asn1;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +33,7 @@ namespace easyLNC.Abstract
         /// </summary>
         /// <param name="screen"></param>
         /// <returns></returns>
-        IScreenCapture Begin(ScreenInfo screen);
+        bool Begin(ScreenInfo screen,[NotNullWhen(true)] out IScreenCapture screenCapture);
         /// <summary>
         /// ends capturing the specified screen capture
         /// </summary>

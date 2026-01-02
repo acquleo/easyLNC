@@ -8,7 +8,7 @@ namespace easyLNC.Abstract
 {
     public interface IScreenStreamHandler
     {
-        public void Attach(IScreenCapture screenCapture);
+        public void Attach(IScreenCapture screenCapture, out StreamInfo streamInfo);
         public void Detach(IScreenCapture screenCapture);
     }
 }

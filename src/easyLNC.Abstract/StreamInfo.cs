@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace easyLNC.Abstract
 {
-    public interface IClientSessionTransport
+    public class StreamInfo
     {
-        string Id { get; }
-        event Action<IClientSessionTransport?> OnDisconnected;
+        public string Type { get; set; }=string.Empty;
+        public string Params { get; set; }=string.Empty;
+        
     }
 }

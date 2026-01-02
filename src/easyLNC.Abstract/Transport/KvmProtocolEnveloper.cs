@@ -19,8 +19,8 @@ namespace easyLNC.Abstract.Transport
             { nameof(MouseButtonActionMessage), typeof(MouseButtonActionMessage) },
             { nameof(MouseWheelMessage), typeof(MouseWheelMessage) },
             { nameof(KeepAliveMessage), typeof(KeepAliveMessage) },
-            { nameof(EnterScreenMessage), typeof(EnterScreenMessage) },
-            { nameof(LeaveScreenMessage), typeof(LeaveScreenMessage) },
+            { nameof(MouseEnterScreenMessage), typeof(MouseEnterScreenMessage) },
+            { nameof(MouseLeaveScreenMessage), typeof(MouseLeaveScreenMessage) },
 
 
 

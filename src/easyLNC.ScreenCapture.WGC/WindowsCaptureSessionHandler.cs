@@ -1,6 +1,7 @@
 ﻿using easyLNC.Abstract;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace easyLNC.ScreenCapture.WGC
         Dictionary<string, WindowsCaptureSessionInfo> sessions = new Dictionary<string, WindowsCaptureSessionInfo>();
 
         
-        public IScreenCapture Begin(ScreenInfo screen)
+        public bool Begin(ScreenInfo screen, [NotNullWhen(true)] out IScreenCapture screenCapture)
         {
             try
             {
@@ -40,7 +41,8 @@ namespace easyLNC.ScreenCapture.WGC
                 {
                     if (sessions.ContainsKey(screen.Name))
                     {
-                        return sessions[screen.Name].Session;
+                        screenCapture = sessions[screen.Name].Session;
+                        return true;
                     }
                     session = new WindowsCaptureSession(screen, device);
                     WindowsCaptureSessionInfo sessionInfo = new WindowsCaptureSessionInfo(session);
@@ -52,7 +54,8 @@ namespace easyLNC.ScreenCapture.WGC
 
                 OnStarted?.Invoke(this, session);
 
-                return session;
+                screenCapture = session;
+                return true;
             }
             finally
             {

@@ -57,16 +57,16 @@ app.Lifetime.ApplicationStarted.Register(() =>
 
         while (true)
         {
-            
-            var captureSession = screenCaptureHandler.Begin(screenInfoHandler.GetScreens().First());
 
-            streamHandler.Attach(captureSession);
+            screenCaptureHandler.Begin(screenInfoHandler.GetScreens().First(), out var streamCapture);
+
+            streamHandler.Attach(streamCapture, out var streamInfo);
 
             break;
 
             Thread.Sleep(0);
 
-            screenCaptureHandler?.End(captureSession);
+            screenCaptureHandler?.End(streamCapture);
 
             Thread.Sleep(10);
 

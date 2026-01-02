@@ -17,7 +17,7 @@ namespace easyLNC.Abstract
         /// Handles the event when the mouse pointer leaves the specified screen.
         /// </summary>
         /// <param name="screen">The screen from which the mouse pointer has departed. Cannot be null.</param>
-        void MauseLeave(ScreenInfo screen);
+        void MouseLeave(ScreenInfo screen);
         
     }
 }

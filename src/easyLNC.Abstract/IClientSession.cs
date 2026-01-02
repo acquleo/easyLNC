@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace easyLNC.Abstract
 {
-    public interface ISession
+    public interface IClientSession
     {
-        IScreenCaptureHandler GetScreenCaptureHandler();
+        public string Id { get; }
         IEnumerable<IScreenCapture> GetScreenCaptures();
 
     }
