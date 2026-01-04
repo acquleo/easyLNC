@@ -9,5 +9,6 @@ namespace easyLNC.ScreenStream.OMT
     internal class OmtScreenParams
     {
         public string StreamName { get; set; } = string.Empty;
+        public int Port { get; set; }
     }
 }

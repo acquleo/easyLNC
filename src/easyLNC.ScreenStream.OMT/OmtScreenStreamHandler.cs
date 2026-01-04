@@ -18,9 +18,12 @@ namespace easyLNC.ScreenStream.OMT
 
         public void Attach(IScreenCapture screenCapture, out StreamInfo streamInfo)
         {
+            stream = new OmtScreenStream(screenCapture);
+
             OmtScreenParams omtScreenParams = new OmtScreenParams
             {
-                StreamName = $"{screenCapture.Screen.Name}"
+                StreamName = $"{screenCapture.Screen.Name}",
+                Port = stream.Port
             };
 
             streamInfo = new StreamInfo
@@ -33,7 +36,6 @@ namespace easyLNC.ScreenStream.OMT
             {
                 stream?.Dispose();
             }
-            stream = new OmtScreenStream(screenCapture);
 
         }
 

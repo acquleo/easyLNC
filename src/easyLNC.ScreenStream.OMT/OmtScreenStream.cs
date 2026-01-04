@@ -19,9 +19,12 @@ namespace easyLNC.ScreenStream.OMT
         public OmtScreenStream(IScreenCapture screenCapture)
         {
             this.screenCapture = screenCapture;
-            this.sender = new OMTSend(screenCapture.Screen.Name, OMTQuality.Low);
+            this.sender = new OMTSend(screenCapture.Screen.Name, OMTQuality.Default);
+           
             this.screenCapture.OnNewFrame += ScreenCapture_OnNewFrame;
         }
+
+        public int Port => sender.Port;
 
         public void Dispose()
         {

@@ -30,9 +30,9 @@ namespace OmtViewer
                 this.render = new D3D11WinFormsRenderer(device, this.Handle, this.ClientSize.Width, this.ClientSize.Height);
 
 
-            OMTDiscovery omtdis = OMTDiscovery.GetInstance();
-            var addresses = omtdis.GetAddresses();
-            OMTReceive receiver = new OMTReceive(addresses.FirstOrDefault(), OMTFrameType.Video, OMTPreferredVideoFormat.BGRA, OMTReceiveFlags.None);
+            //OMTDiscovery omtdis = OMTDiscovery.GetInstance();
+            //var addresses = omtdis.GetAddresses();
+            OMTReceive receiver = new OMTReceive($@"omt://ACQULEOBOOK2:6400", OMTFrameType.Video, OMTPreferredVideoFormat.BGRA, OMTReceiveFlags.None);
 
 
             new Thread(() =>
