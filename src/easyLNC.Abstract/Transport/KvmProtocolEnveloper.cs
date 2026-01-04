@@ -11,16 +11,16 @@ namespace easyLNC.Abstract.Transport
     {
         Dictionary<string, Type> _messageTypes = new Dictionary<string, Type>
         {
-            { nameof(SendVirtualKeyDownMessage), typeof(SendVirtualKeyDownMessage) },
-            { nameof(SendVirtualKeyUpMessage), typeof(SendVirtualKeyUpMessage) },
+            { nameof(VirtualKeyDown), typeof(VirtualKeyDown) },
+            { nameof(VirtualKeyUp), typeof(VirtualKeyUp) },
             { nameof(ControlStartMessage), typeof(ControlStartMessage) },
             { nameof(ControlEndMessage), typeof(ControlEndMessage) },
-            { nameof(MouseMoveMessage), typeof(MouseMoveMessage) },
-            { nameof(MouseButtonActionMessage), typeof(MouseButtonActionMessage) },
-            { nameof(MouseWheelMessage), typeof(MouseWheelMessage) },
-            { nameof(KeepAliveMessage), typeof(KeepAliveMessage) },
-            { nameof(MouseEnterScreenMessage), typeof(MouseEnterScreenMessage) },
-            { nameof(MouseLeaveScreenMessage), typeof(MouseLeaveScreenMessage) },
+            { nameof(MouseMove), typeof(MouseMove) },
+            { nameof(MouseButtonAction), typeof(MouseButtonAction) },
+            { nameof(MouseWheel), typeof(MouseWheel) },
+            { nameof(KeepAlive), typeof(KeepAlive) },
+            { nameof(MouseEnterScreen), typeof(MouseEnterScreen) },
+            { nameof(MouseLeaveScreen), typeof(MouseLeaveScreen) },
 
 
 

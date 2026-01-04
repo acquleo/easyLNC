@@ -1,17 +1,20 @@
 ﻿using easyLNC.Abstract;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace easyLNC.Core
 {
+    
+
     internal class ClientSession : IClientSession
     {
         DateTime lastKeepAlive = DateTime.UtcNow;
         Guid sessionId;
-        List<IScreenCapture> screenCaptures = new List<IScreenCapture>();
+        List<ClientScreenCaptureInfo> screenCaptures = new List<ClientScreenCaptureInfo>();
         public ClientSession() { 
             sessionId = Guid.NewGuid();
         }
@@ -28,23 +31,25 @@ namespace easyLNC.Core
             return (DateTime.UtcNow - lastKeepAlive).TotalSeconds > 30;
         }
 
-        public void AddScreenCapture(IScreenCapture screenCapture)
+        public bool GetScreenCaptureInfo(int screenIndex, [NotNullWhen(true)] out ClientScreenCaptureInfo? screenCaptureInfo)
         {
-            screenCaptures.Add(screenCapture);
+            var capture = screenCaptures.FirstOrDefault(sc => sc.ScreenCapture.Screen.Index == screenIndex);
+            screenCaptureInfo = capture != null ? new ClientScreenCaptureInfo(capture.ScreenCapture, capture.StreamInfo) : null;
+            return screenCaptureInfo != null;
         }
 
-        public void RemoveScreenCapture(IScreenCapture screenCapture)
+        public void AddScreenCapture(IScreenCapture screenCapture, StreamInfo streamInfo)
         {
-            screenCaptures.Remove(screenCapture);
+            screenCaptures.Add(new ClientScreenCaptureInfo(screenCapture, streamInfo));
         }
 
-        public bool GetScreenCaptureById(string id, out IScreenCapture? screenCapture)
+        public void RemoveScreenCapture(ClientScreenCaptureInfo screenCaptureInfo)
         {
-            screenCapture = screenCaptures.FirstOrDefault(sc => sc.Id.ToString() == id);
-            return screenCapture != null;
+            screenCaptures.Remove(screenCaptureInfo);
         }
 
-        public IEnumerable<IScreenCapture> GetScreenCaptures()
+
+        public IEnumerable<ClientScreenCaptureInfo> GetScreenCaptures()
         {
             return screenCaptures.AsEnumerable();
         }

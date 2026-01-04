@@ -8,7 +8,6 @@ namespace easyLNC.Abstract
 {
     public interface IScreenCapture
     {
-        Guid Id { get; }
         event Action<IScreenCapture, ScreenFrame>? OnNewFrame;
         ScreenInfo Screen { get; }
         bool IsRunning();

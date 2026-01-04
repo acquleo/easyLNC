@@ -32,14 +32,36 @@ namespace easyLNC.Core
             this.serverTransportHandler.OnMouseEnterScreen += ServerTransportHandler_OnMouseEnterScreen;
             this.serverTransportHandler.OnMouseLeaveScreen += ServerTransportHandler_OnMouseLeaveScreen;
             this.serverTransportHandler.OnMouseMove += ServerTransportHandler_OnMouseMove;
+            this.serverTransportHandler.OnMouseButtonAction += ServerTransportHandler_OnMouseButtonAction;
         }
 
-        private void ServerTransportHandler_OnMouseMove(IClient arg1, Abstract.Transport.MouseMoveMessage arg2)
+        private void ServerTransportHandler_OnMouseButtonAction(IClient arg1, Abstract.Transport.MouseButtonAction arg2)
         {
-            throw new NotImplementedException();
+            if (!clientSessions.TryGetValue(arg2.SessionId, out var session))
+            {
+                return;
+            }
+            if (!screenInfoHandler.GetScreen(arg2.ScreenIndex, out var screenInfo))
+            {
+                return;
+            }
+            screenControlHandler.MouseButtonAction(arg2, screenInfo);
         }
 
-        private void ServerTransportHandler_OnMouseLeaveScreen(IClient arg1, Abstract.Transport.MouseLeaveScreenMessage arg2)
+        private void ServerTransportHandler_OnMouseMove(IClient arg1, Abstract.Transport.MouseMove arg2)
+        {
+            if (!clientSessions.TryGetValue(arg2.SessionId, out var session))
+            {
+                return;
+            }
+            if(!screenInfoHandler.GetScreen(arg2.ScreenIndex, out var screenInfo))
+            {
+                return;
+            }
+            screenControlHandler.MouseMove(arg2, screenInfo);
+        }
+
+        private void ServerTransportHandler_OnMouseLeaveScreen(IClient arg1, Abstract.Transport.MouseLeaveScreen arg2)
         {
             if (!clientSessions.TryGetValue(arg2.SessionId, out var session))
             {
@@ -51,10 +73,10 @@ namespace easyLNC.Core
                 return;
             }
 
-            screenControlHandler.MouseLeave(screenInfo);
+            screenControlHandler.MouseLeave(arg2, screenInfo);
         }
 
-        private void ServerTransportHandler_OnMouseEnterScreen(IClient arg1, Abstract.Transport.MouseEnterScreenMessage arg2)
+        private void ServerTransportHandler_OnMouseEnterScreen(IClient arg1, Abstract.Transport.MouseEnterScreen arg2)
         {
             if (!clientSessions.TryGetValue(arg2.SessionId, out var session))
             {
@@ -66,7 +88,7 @@ namespace easyLNC.Core
                 return;
             }
 
-            screenControlHandler.MouseEnter(screenInfo);
+            screenControlHandler.MouseEnter(arg2, screenInfo);
         }
 
         private Abstract.Transport.ScreenCaptureEndRes ServerTransportHandler_OnScreenCaptureEnd(IClient arg1, Abstract.Transport.ScreenCaptureEndReq arg2)
@@ -79,7 +101,7 @@ namespace easyLNC.Core
                 };
             }
 
-            if(!session.GetScreenCaptureById(arg2.CaptureId, out var screenCapture))
+            if(!session.GetScreenCaptureInfo(arg2.ScreenIndex, out var existingInfo))
             {
                 // Screen capture not found, return empty response
                 return new Abstract.Transport.ScreenCaptureEndRes
@@ -87,11 +109,11 @@ namespace easyLNC.Core
                 };
             }
 
-            if(screenCapture != null)
+            if(existingInfo != null)
             {
-                screenCaptureHandler.End(screenCapture);
+                screenCaptureHandler.End(existingInfo.ScreenCapture);
 
-                session.RemoveScreenCapture(screenCapture);
+                session.RemoveScreenCapture(existingInfo);
             }
 
             Abstract.Transport.ScreenCaptureEndRes response = new Abstract.Transport.ScreenCaptureEndRes
@@ -113,10 +135,22 @@ namespace easyLNC.Core
                 };
             }
 
-            foreach (var screein in arg2.ScreenList)
+            foreach (var screen in arg2.ScreenList)
             {
-                if (!this.screenInfoHandler.GetScreen(screein, out var screenInfo))
+                if (!this.screenInfoHandler.GetScreen(screen, out var screenInfo))
                 {
+                    continue;
+                }
+
+                if(session.GetScreenCaptureInfo(screenInfo.Index, out var existingCapture))
+                {
+                    // Screen capture already exists for this screen, skip
+                    screenStreamInfos.Add(new Abstract.Transport.ScreenStreamInfo
+                    {
+                        MonitorIndex = screenInfo.Index,
+                        StreamType = existingCapture.StreamInfo.Type,
+                        StreamParams = existingCapture.StreamInfo.Params
+                    });
                     continue;
                 }
 
@@ -127,11 +161,10 @@ namespace easyLNC.Core
 
                 this.screenStreamHandler.Attach(streamCapture, out var streamInfo);
 
-                session.AddScreenCapture(streamCapture);
+                session.AddScreenCapture(streamCapture, streamInfo);
 
                 screenStreamInfos.Add(new Abstract.Transport.ScreenStreamInfo
                 {
-                    CaptureId = streamCapture.Id.ToString(),
                     MonitorIndex = screenInfo.Index,
                     StreamType = streamInfo.Type,
                     StreamParams = streamInfo.Params
@@ -161,7 +194,7 @@ namespace easyLNC.Core
             {
                 foreach(var screenCapture in session.GetScreenCaptures())
                 {
-                    screenCaptureHandler.End(screenCapture);
+                    screenCaptureHandler.End(screenCapture.ScreenCapture);
                 }
             }
             Abstract.Transport.SessionEndRes response = new Abstract.Transport.SessionEndRes

@@ -29,11 +29,12 @@ namespace easyLNC.Screen.InfoHandler
                             Index = index++,
                             Handle = (int)hMonitor,
                             IsPrimary = (mi.dwFlags & MonitorInfoFlags.MONITORINFOF_PRIMARY) != 0,
-                            Height = mi.rcMonitor.bottom - mi.rcMonitor.top,
-                            Width = mi.rcMonitor.right - mi.rcMonitor.left,
+                            Area = new System.Drawing.Rectangle(
+                                mi.rcMonitor.left,
+                                mi.rcMonitor.top,
+                                mi.rcMonitor.right - mi.rcMonitor.left,
+                                mi.rcMonitor.bottom - mi.rcMonitor.top),
                             Name = mi.szDevice,
-                            X = mi.rcMonitor.left,
-                            Y = mi.rcMonitor.top,
                         };
                         result.Add(info);
                     }

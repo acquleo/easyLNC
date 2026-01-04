@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +8,8 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class ScreenCaptureEndReq : BaseSessionReq
+    public class VirtualKeyUp
     {
-        public int ScreenIndex { get; set; } = 0;
+        public int VirtualKey { get; set; }
     }
 }

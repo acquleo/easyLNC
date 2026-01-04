@@ -1,7 +1,10 @@
 using easyLNC.Abstract;
+using easyLNC.Core;
 using easyLNC.Screen.InfoHandler;
 using easyLNC.ScreenCapture.WGC;
+using easyLNC.ScreenControl.WinV1;
 using easyLNC.ScreenStream.OMT;
+using easyLNC.Server.Dummy;
 using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +19,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IScreenCaptureHandler, WindowsCaptureSessionHandler>();
 builder.Services.AddSingleton<IScreenStreamHandler, OmtScreenStreamHandler>();
 builder.Services.AddSingleton<IScreenInfoHandler, ScreenInfoHandler>();
+builder.Services.AddSingleton<IScreenControlHandler, KeyboardMouseInputWinV1>();
+builder.Services.AddSingleton<IServerTransportHandler, DummyServerTransportHandler>();
+builder.Services.AddSingleton<CoreEasyLNC>();
 
 var app = builder.Build();
 
@@ -54,6 +60,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
         var screenCaptureHandler = app.Services.GetRequiredService<IScreenCaptureHandler>();
         var streamHandler = app.Services.GetRequiredService<IScreenStreamHandler>();
         var screenInfoHandler = app.Services.GetRequiredService<IScreenInfoHandler>();
+        var coreEasyLNC = app.Services.GetRequiredService<CoreEasyLNC>();
 
         while (true)
         {

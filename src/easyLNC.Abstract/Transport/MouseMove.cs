@@ -7,8 +7,10 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class ScreenCaptureEndReq : BaseSessionReq
+    public class MouseMove : BaseSessionReq
     {
-        public int ScreenIndex { get; set; } = 0;
+        public int ScreenIndex { get; set; }
+        public double AbsoluteX { get; set; }
+        public double AbsoluteY { get; set; }
     }
 }

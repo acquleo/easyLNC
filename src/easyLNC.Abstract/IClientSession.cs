@@ -6,10 +6,21 @@ using System.Threading.Tasks;
 
 namespace easyLNC.Abstract
 {
+    public class ClientScreenCaptureInfo
+    {
+        public IScreenCapture ScreenCapture { get; set; }
+        public StreamInfo StreamInfo { get; set; }
+        public ClientScreenCaptureInfo(IScreenCapture screenCapture, StreamInfo streamInfo)
+        {
+            ScreenCapture = screenCapture;
+            StreamInfo = streamInfo;
+        }
+    }
+
     public interface IClientSession
     {
         public string Id { get; }
-        IEnumerable<IScreenCapture> GetScreenCaptures();
+        IEnumerable<ClientScreenCaptureInfo> GetScreenCaptures();
 
     }
 }

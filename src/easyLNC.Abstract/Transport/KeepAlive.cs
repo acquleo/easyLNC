@@ -7,8 +7,8 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class ScreenCaptureEndReq : BaseSessionReq
+    public class KeepAlive : BaseSessionReq
     {
-        public int ScreenIndex { get; set; } = 0;
+
     }
 }

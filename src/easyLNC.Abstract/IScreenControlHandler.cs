@@ -1,4 +1,5 @@
-﻿using System;
+﻿using easyLNC.Abstract.Transport;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,16 +9,13 @@ namespace easyLNC.Abstract
 {
     public interface IScreenControlHandler
     {
-        /// <summary>
-        /// Handles the event when the mouse pointer enters the specified screen.
-        /// </summary>
-        /// <param name="screen">The screen that the mouse pointer has entered. Cannot be null.</param>
-        void MouseEnter(ScreenInfo screen);
-        /// <summary>
-        /// Handles the event when the mouse pointer leaves the specified screen.
-        /// </summary>
-        /// <param name="screen">The screen from which the mouse pointer has departed. Cannot be null.</param>
-        void MouseLeave(ScreenInfo screen);
-        
+        void MouseEnter(MouseEnterScreen mouseEnterScreen, ScreenInfo screen);
+        void MouseLeave(MouseLeaveScreen mouseLeaveScreen, ScreenInfo screen);
+        void MouseMove(MouseMove mouseMove, ScreenInfo screen);
+        void MouseButtonAction(MouseButtonAction mouseButtonAction, ScreenInfo screen);
+        void MouseWheel(MouseWheel mouseWheel, ScreenInfo screen);
+        void VirtualKeyDown(VirtualKeyDown sendVirtualKeyDown, ScreenInfo screen);
+        void VirtualKeyUp(VirtualKeyUp sendVirtualKeyUp, ScreenInfo screen);
+
     }
 }

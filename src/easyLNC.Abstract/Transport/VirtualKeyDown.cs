@@ -7,9 +7,8 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class MouseEnterScreenMessage :BaseSessionReq
+    public class VirtualKeyDown 
     {
-        public int ScreenIndex { get; set; }
-
+        public int VirtualKey { get; set; }
     }
 }
