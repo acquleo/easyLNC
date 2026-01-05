@@ -7,7 +7,7 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class ScreenCaptureStartReq: BaseSessionReq
+    public partial class ScreenCaptureStartReq : BaseSessionReq
     {
         public List<int> ScreenList { get; set; } = new List<int>();
     }

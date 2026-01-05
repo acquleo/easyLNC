@@ -7,7 +7,7 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class ControlEndMessage : acquleo.Protocol.IMessage
+    public partial class ControlEndMessage : acquleo.Protocol.IMessage
     {
         public ControlEndMessage()
         {            

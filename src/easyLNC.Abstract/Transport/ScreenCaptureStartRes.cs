@@ -7,7 +7,7 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class ScreenCaptureStartRes : BaseRes
+    public partial class ScreenCaptureStartRes : BaseRes
     {
         public List<ScreenStreamInfo> ScreenStreamInfos { get; set; } = new List<ScreenStreamInfo>();
     }

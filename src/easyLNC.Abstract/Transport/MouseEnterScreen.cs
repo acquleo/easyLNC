@@ -7,7 +7,7 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class MouseEnterScreen :BaseSessionReq
+    public partial class MouseEnterScreen :BaseSessionReq
     {
         public int ScreenIndex { get; set; }
 

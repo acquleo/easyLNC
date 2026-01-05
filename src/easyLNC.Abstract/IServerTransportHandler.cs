@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace easyLNC.Abstract
 {
-    public interface IServerTransportHandler
+    public interface IServerTransportHandler : IDisposable
     {
         event Action<IServerTransportHandler, IClient>? OnConnected;
         event Action<IServerTransportHandler, IClient>? OnDisconnected;
@@ -23,7 +23,7 @@ namespace easyLNC.Abstract
         event Action<IClient, MouseWheel>? OnMouseWheel;
         event Action<IClient, VirtualKeyDown>? OnVirtualKeyDown;
         event Action<IClient, VirtualKeyUp>? OnVirtualKeyUp;
-        event Action<IClient, KeepAlive>? OnKeepAlive;
+        event Action<IClient, SessionKeepAlive>? OnKeepAlive;
 
         IEnumerable<IClient> GetConnectedClients();
         IClient GetClientById(string id);

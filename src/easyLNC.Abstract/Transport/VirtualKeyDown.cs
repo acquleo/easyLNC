@@ -7,7 +7,7 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class VirtualKeyDown 
+    public partial class VirtualKeyDown 
     {
         public int VirtualKey { get; set; }
     }

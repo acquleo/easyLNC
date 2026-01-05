@@ -7,13 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\libomtnet\libomtnet.csproj" />
     <ProjectReference Include="..\easyLNC.Abstract\easyLNC.Abstract.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="libomtnet">
-      <HintPath>libomtnet.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

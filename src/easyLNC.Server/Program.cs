@@ -5,6 +5,7 @@ using easyLNC.ScreenCapture.WGC;
 using easyLNC.ScreenControl.WinV1;
 using easyLNC.ScreenStream.OMT;
 using easyLNC.Server.Dummy;
+using easyLNC.ServerTransport.TcpIp;
 using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,11 +17,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<ServerTransportTcpIpParams>(new ServerTransportTcpIpParams(6399));
+builder.Services.AddSingleton<IServerTransportHandler, ServerTransportTcpIp>();
 builder.Services.AddSingleton<IScreenCaptureHandler, WindowsCaptureSessionHandler>();
 builder.Services.AddSingleton<IScreenStreamHandler, OmtScreenStreamHandler>();
 builder.Services.AddSingleton<IScreenInfoHandler, ScreenInfoHandler>();
 builder.Services.AddSingleton<IScreenControlHandler, KeyboardMouseInputWinV1>();
-builder.Services.AddSingleton<IServerTransportHandler, DummyServerTransportHandler>();
 builder.Services.AddSingleton<CoreEasyLNC>();
 
 var app = builder.Build();

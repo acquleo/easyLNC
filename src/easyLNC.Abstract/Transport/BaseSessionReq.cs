@@ -7,7 +7,7 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class BaseSessionReq : BaseReq
+    public partial class BaseSessionReq : BaseReq
     {
         public string SessionId { get; set; } = string.Empty;
     }

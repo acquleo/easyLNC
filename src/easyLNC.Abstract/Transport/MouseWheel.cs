@@ -7,7 +7,7 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class MouseWheel
+    public partial class MouseWheel
     {
         public int Delta { get; set; }
     }

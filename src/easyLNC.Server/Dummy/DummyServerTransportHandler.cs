@@ -18,7 +18,12 @@ namespace easyLNC.Server.Dummy
         public event Action<IClient, MouseWheel>? OnMouseWheel;
         public event Action<IClient, VirtualKeyDown>? OnVirtualKeyDown;
         public event Action<IClient, VirtualKeyUp>? OnVirtualKeyUp;
-        public event Action<IClient, KeepAlive>? OnKeepAlive;
+        public event Action<IClient, SessionKeepAlive>? OnKeepAlive;
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
 
         public IClient GetClientById(string id)
         {

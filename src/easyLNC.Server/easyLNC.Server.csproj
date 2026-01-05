@@ -17,6 +17,7 @@
     <ProjectReference Include="..\easyLNC.Abstract\easyLNC.Abstract.csproj" />
     <ProjectReference Include="..\easyLNC.Screen.InfoHandler\easyLNC.Screen.InfoHandler.csproj" />
     <ProjectReference Include="..\easyLNC.ScreenCapture.WGC\easyLNC.ScreenCapture.WGC.csproj" />
+    <ProjectReference Include="..\easyLNC.ServerTransport.TcpIp\easyLNC.ServerTransport.TcpIp.csproj" />
   </ItemGroup>
 
 </Project>

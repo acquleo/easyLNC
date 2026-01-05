@@ -7,7 +7,7 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class SessionEndRes : BaseRes
+    public partial class SessionEndRes : BaseRes
     {
 
     }

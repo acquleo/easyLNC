@@ -7,7 +7,7 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public class ControlStartMessage : acquleo.Protocol.IMessage
+    public partial class ControlStartMessage : acquleo.Protocol.IMessage
     {
         public ControlStartMessage()
         {            
