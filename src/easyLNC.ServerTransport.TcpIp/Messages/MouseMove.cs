@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using acquleo.Protocol;
+
+namespace easyLNC.ServerTransport.TcpIp.Messages
+{
+    public partial class MouseMove : BaseSessionReq
+    {
+        public int ScreenIndex { get; set; }
+        public double AbsoluteX { get; set; }
+        public double AbsoluteY { get; set; }
+    }
+}

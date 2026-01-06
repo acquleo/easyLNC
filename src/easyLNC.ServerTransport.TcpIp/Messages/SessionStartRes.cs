@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using acquleo.Protocol;
+using easyLNC.Abstract;
 
-namespace easyLNC.Abstract.Transport
+namespace easyLNC.ServerTransport.TcpIp.Messages
 {
-    public partial class ControlEndMessage
+    public partial class SessionStartRes : BaseReqResMessage, IMessageResponse
     {
 
     }

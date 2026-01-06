@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using acquleo.Protocol;
 
-namespace easyLNC.Abstract.Transport
+namespace easyLNC.ServerTransport.TcpIp.Messages
 {
-    public partial class ControlEndMessage
+    public partial class VirtualKeyDown 
     {
-
+        public int VirtualKey { get; set; }
     }
 }

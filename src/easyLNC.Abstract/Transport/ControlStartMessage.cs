@@ -7,27 +7,8 @@ using acquleo.Protocol;
 
 namespace easyLNC.Abstract.Transport
 {
-    public partial class ControlStartMessage : acquleo.Protocol.IMessage
+    public partial class ControlStartMessage 
     {
-        public ControlStartMessage()
-        {            
 
-        }
-
-        public ControlStartMessage(byte[] data) 
-        { 
-
-        }
-
-
-        public byte[] Serialize()
-        {
-            return new byte[0];
-        }
-
-        public IEnumerable<Header> GetHeaders()
-        {
-            return new List<Header>();
-        }
     }
 }
