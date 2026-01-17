@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<ServerTransportTcpIpParams>(new ServerTransportTcpIpParams(6399));
 builder.Services.AddSingleton<IServerTransportHandler, ServerTransportTcpIp>();
-builder.Services.AddSingleton<IScreenCaptureHandler, WindowsCaptureSessionHandler>();
+builder.Services.AddSingleton<IScreenCaptureHandler, DXGIScreenCaptureSessionHandler>();
 builder.Services.AddSingleton<IScreenStreamHandler, OmtScreenStreamHandler>();
 builder.Services.AddSingleton<IScreenInfoHandler, ScreenInfoHandler>();
 builder.Services.AddSingleton<IScreenControlHandler, KeyboardMouseInputWinV1>();

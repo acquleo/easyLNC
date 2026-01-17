@@ -9,7 +9,7 @@ using static Vanara.PInvoke.User32;
 
 namespace easyLNC.ScreenCapture.WGC
 {
-    internal class MonitorEnumerationHelper
+    public class MonitorEnumerationHelper
     {
         public static IEnumerable<WindowsCaptureScreen> GetMonitors()
         {

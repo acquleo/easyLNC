@@ -4,6 +4,7 @@
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>28e1e059-e3ab-4ca6-8eed-083368cef466</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\easyLNC.Core\easyLNC.Core.csproj" />
+    <ProjectReference Include="..\easyLNC.ScreenCapture.Duplication\easyLNC.ScreenCapture.Duplication.csproj" />
     <ProjectReference Include="..\easyLNC.ScreenControl.WindowsA\easyLNC.ScreenControl.WinV1.csproj" />
     <ProjectReference Include="..\easyLNC.ScreenStream.OMT\easyLNC.ScreenStream.OMT.csproj" />
     <ProjectReference Include="..\easyLNC.Abstract\easyLNC.Abstract.csproj" />

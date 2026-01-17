@@ -60,6 +60,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libomtnet", "..\libomtnet\l
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "easyLNC.ServerTransport.TcpIp", "src\easyLNC.ServerTransport.TcpIp\easyLNC.ServerTransport.TcpIp.csproj", "{4F28E03E-7B35-461E-AA33-A2E8076FEACA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "easyLNC.ScreenCapture.Duplication", "src\easyLNC.ScreenCapture.Duplication\easyLNC.ScreenCapture.Duplication.csproj", "{7EE252E8-4820-4A27-8A53-9D61435F8A53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +132,10 @@ Global
 		{4F28E03E-7B35-461E-AA33-A2E8076FEACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F28E03E-7B35-461E-AA33-A2E8076FEACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F28E03E-7B35-461E-AA33-A2E8076FEACA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EE252E8-4820-4A27-8A53-9D61435F8A53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EE252E8-4820-4A27-8A53-9D61435F8A53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EE252E8-4820-4A27-8A53-9D61435F8A53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EE252E8-4820-4A27-8A53-9D61435F8A53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,6 +153,7 @@ Global
 		{C2AB0274-1CDD-87CE-AD4C-81E24C4E336B} = {FEF55CB7-38B3-4910-99AD-093974D88AEA}
 		{38C9BCBF-ADC1-831B-5573-3F4ED8610447} = {35F12426-E332-47A2-B4A4-4453191FDA6A}
 		{4F28E03E-7B35-461E-AA33-A2E8076FEACA} = {CB50EC66-98D4-4E6C-8436-CA620AF0FA9A}
+		{7EE252E8-4820-4A27-8A53-9D61435F8A53} = {1E739856-E3B9-4F32-80E2-A2FFA7598B01}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A0754AB0-078F-44C4-97AB-7ACE3B4A2722}

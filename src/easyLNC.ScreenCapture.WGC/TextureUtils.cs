@@ -69,7 +69,6 @@ namespace easyLNC.ScreenCapture.WGC
         /// </summary>
         public static void FreeBGRA(nint buffer)
         {
-
             Marshal.FreeHGlobal(buffer);
         }
     }
