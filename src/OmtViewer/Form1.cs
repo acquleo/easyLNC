@@ -33,7 +33,8 @@ namespace OmtViewer
             //OMTDiscovery omtdis = OMTDiscovery.GetInstance();
             //var addresses = omtdis.GetAddresses();
             //OMTReceive receiver = new OMTReceive(addresses.FirstOrDefault(), OMTFrameType.Video, OMTPreferredVideoFormat.BGRA, OMTReceiveFlags.None);
-            OMTReceive receiver = new OMTReceive($@"omt://127.0.0.1:6400", OMTFrameType.Video, OMTPreferredVideoFormat.BGRA, OMTReceiveFlags.None);
+            //OMTReceive receiver = new OMTReceive($@"omt://127.0.0.1:6400", OMTFrameType.Video, OMTPreferredVideoFormat.BGRA, OMTReceiveFlags.None);
+            OMTReceive receiver = new OMTReceive($@"omt://10.100.171.158:6400", OMTFrameType.Video, OMTPreferredVideoFormat.BGRA, OMTReceiveFlags.None);
 
 
             new Thread(() =>
