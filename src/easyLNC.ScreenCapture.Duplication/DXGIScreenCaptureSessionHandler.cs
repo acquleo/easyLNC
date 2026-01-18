@@ -11,8 +11,7 @@ namespace easyLNC.ScreenCapture.WGC
 
     public class DXGIScreenCaptureSessionHandler : IScreenCaptureHandler
     {
-        Guid id = Guid.NewGuid();
-
+        Guid id = Guid.NewGuid();        
         public event Action<IScreenCaptureHandler, IScreenCapture>? OnBegin;
         public event Action<IScreenCaptureHandler, IScreenCapture>? OnEnd;
         public event Action<IScreenCaptureHandler, IScreenCapture>? OnStarted;

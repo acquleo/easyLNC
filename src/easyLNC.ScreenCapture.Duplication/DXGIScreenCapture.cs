@@ -8,7 +8,9 @@ using SharpDX.Mathematics.Interop;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Vanara.PInvoke;
 using static DxgiScreenCapture;
+using static Vanara.PInvoke.User32;
 using Device = SharpDX.Direct3D11.Device;
 
 public class DxgiScreenCapture :  IScreenCapture, IDisposable
@@ -20,20 +22,28 @@ public class DxgiScreenCapture :  IScreenCapture, IDisposable
     private Texture2D stagingTexture;
     private Texture2D currentFrameTexture;
     private Texture2D previousFrameTexture;
-
+    DesktopWatcher desktopWatcher = new DesktopWatcher();
     private Thread _captureThread;
     private bool _running;
     public event Action<IScreenCapture, ScreenFrame>? OnNewFrame;
     ScreenInfo screen;
+    SafeHDESK hDesk = SafeHDESK.Null;
     int fps = 60;
 
     public DxgiScreenCapture(ScreenInfo wgcScreen, SharpDX.Direct3D11.Device device, int outputIndex = 0)
     {
         this._device = device;
         this.screen = wgcScreen;
-
-        Initialize();
+        desktopWatcher.DesktopChanged += DesktopWatcher_DesktopChanged;
     }
+
+    private void DesktopWatcher_DesktopChanged(string obj, SafeHDESK hDesk)
+    {
+        this.hDesk=hDesk;
+        this.Stop();
+        this.Start();
+    }
+
     public bool IsRunning()
     {
         return true;
@@ -43,44 +53,62 @@ public class DxgiScreenCapture :  IScreenCapture, IDisposable
     public int Height { get; private set; }
     private void Initialize()
     {
-        // Create Direct3D 11 device
-        var factory = new Factory1();
-        
-        var dxgiDevice = _device.QueryInterface<SharpDX.DXGI.Device>();
-        var adapter = dxgiDevice.Adapter;
-
-
-        // Get output (monitor)
-        var outputCOunt = adapter.GetOutputCount();
-        for (int i = 0; i < outputCOunt; i++)
+        try
         {
-            var tmp_output = adapter.GetOutput(i);
-            if(tmp_output.Description.DeviceName==this.screen.Name)
+            // Create Direct3D 11 device
+            var factory = new Factory1();
+
+            var dxgiDevice = _device.QueryInterface<SharpDX.DXGI.Device>();
+            var adapter = dxgiDevice.Adapter;
+
+
+            // Get output (monitor)
+            var outputCOunt = adapter.GetOutputCount();
+            for (int i = 0; i < outputCOunt; i++)
             {
-                output = tmp_output;
+                var tmp_output = adapter.GetOutput(i);
+                if (tmp_output.Description.DeviceName == this.screen.Name)
+                {
+                    output = tmp_output;
+                }
             }
+            if (output == null)
+            {
+                throw new InvalidOperationException($@"output not found {this.screen.Name}");
+            }
+            var output1 = output.QueryInterface<Output1>();
+
+            var bounds = output1.Description.DesktopBounds;
+            Width = bounds.Right - bounds.Left;
+            Height = bounds.Bottom - bounds.Top;
+
+
+            CreateTextures();
+
+            // Create duplication
+            _deskDupl = output1.DuplicateOutput(_device);
+
+            for (int i = 0; i < 3; i++)
+            {
+                var result = _deskDupl.TryAcquireNextFrame(500, out var frameInfo, out var desktopResource);
+
+                Console.WriteLine($@"TryAcquireNextFrame {result}");
+
+                if (result == Result.Ok)
+                    break;                
+
+                if (result != Result.Ok && i == 2)
+                    throw new InvalidOperationException($@"failed to start DXGI");
+            }
+
+            // Release temporary COM objects
+            output1.Dispose();
+            factory.Dispose();
         }
-        if (output == null)
+        catch (Exception ex)
         {
-            throw new InvalidOperationException($@"output not found {this.screen.Name}");
+            Console.WriteLine(ex.ToString());
         }
-        var output1 = output.QueryInterface<Output1>();
-
-        var bounds = output1.Description.DesktopBounds;
-        Width = bounds.Right - bounds.Left;
-        Height = bounds.Bottom - bounds.Top;
-
-
-        CreateTextures();
-
-        // Create duplication
-        _deskDupl = output1.DuplicateOutput(_device);
-
-
-        
-        // Release temporary COM objects
-        output1.Dispose();
-        factory.Dispose();
     }
     private bool CheckResolutionChange()
     {
@@ -157,6 +185,9 @@ public class DxgiScreenCapture :  IScreenCapture, IDisposable
         if (_running)
             return;
 
+        Dispose();
+        Initialize();               
+
         _running = true;
         _captureThread = new Thread(CaptureLoop)
         {
@@ -177,179 +208,190 @@ public class DxgiScreenCapture :  IScreenCapture, IDisposable
         {
             try
             {
+                if(hDesk!=SafeHDESK.Null)
+                    User32.SetThreadDesktop(hDesk);
+
                 // Try to acquire next frame
-                if (_deskDupl.TryAcquireNextFrame(500, out var frameInfo, out var desktopResource) == Result.Ok)
+                var result = _deskDupl.TryAcquireNextFrame(500, out var frameInfo, out var desktopResource);
+                if (result != Result.Ok && result!= 0x887A0001)
                 {
-                    using (desktopResource)
-                    {
-                        // Check for resolution changes
-                        bool resolutionChanged = CheckResolutionChange();
-                        if (resolutionChanged)
-                        {
-                            _deskDupl.ReleaseFrame();
-                            RecreateResources();
-                            continue; // Skip this frame, next one will have correct size
-                        }
-
-                        bool hasScreenUpdate = frameInfo.TotalMetadataBufferSize > 0 ||
-                                      frameInfo.LastPresentTime > 0 ||
-                                      frameInfo.AccumulatedFrames > 0;
-
-
-                        if (hasScreenUpdate)
-                        {
-                            using var screenTexture = desktopResource.QueryInterface<Texture2D>();
-
-                            // Check if we have move/dirty rect metadata
-                            bool hasMetadata = frameInfo.TotalMetadataBufferSize > 0;
-
-                            if (hasMetadata)
-                            {
-                                // Get move rectangles
-                                OutputDuplicateMoveRectangle[] moveRects = null;
-                                int moveCount = 0;
-
-                                if (frameInfo.TotalMetadataBufferSize > 0)
-                                {
-                                    // Allocate max possible size for move rects
-                                    int maxMoveRects = frameInfo.TotalMetadataBufferSize / Marshal.SizeOf(typeof(OutputDuplicateMoveRectangle));
-                                    if (maxMoveRects > 0)
-                                    {
-                                        moveRects = new OutputDuplicateMoveRectangle[maxMoveRects];
-                                        int moveSize;
-                                        var move_bufferSize = maxMoveRects * Marshal.SizeOf(typeof(OutputDuplicateMoveRectangle));
-                                        try
-                                        {
-                                            _deskDupl.GetFrameMoveRects(move_bufferSize, moveRects, out moveSize);
-                                            moveCount = moveSize / Marshal.SizeOf(typeof(OutputDuplicateMoveRectangle));
-                                        }
-                                        catch
-                                        {
-                                            moveCount = 0;
-                                        }
-                                    }
-                                }
-
-                                // Get dirty rectangles
-                                RawRectangle[] dirtyRects = null;
-                                int dirtyCount = 0;
-
-                                // Allocate buffer for dirty rects (use total size as upper bound)
-                                int maxDirtyRects = Math.Max(1, frameInfo.TotalMetadataBufferSize / Marshal.SizeOf(typeof(RawRectangle)));
-                                dirtyRects = new RawRectangle[maxDirtyRects];
-                                var bufferSize = maxDirtyRects * Marshal.SizeOf(typeof(RawRectangle));
-
-                                try
-                                {
-                                    _deskDupl.GetFrameDirtyRects(bufferSize, dirtyRects, out var dirtySize);
-                                    dirtyCount = dirtySize / Marshal.SizeOf(typeof(Rectangle));
-                                }
-                                catch (SharpDXException ex)
-                                {
-                                    // E_INVALIDARG means no dirty rects available
-                                    if (ex.ResultCode.Code != unchecked((int)0x80070057))
-                                        throw;
-                                    dirtyCount = 0;
-                                }
-
-                                // Start with previous frame
-                                _device.ImmediateContext.CopyResource(previousFrameTexture, currentFrameTexture);
-
-                                // Apply move rectangles
-                                for (int i = 0; i < moveCount; i++)
-                                {
-                                    var move = moveRects[i];
-                                    int _width = move.DestinationRect.Right - move.DestinationRect.Left;
-                                    int _height = move.DestinationRect.Bottom - move.DestinationRect.Top;
-
-                                    if (_width > 0 && _height > 0)
-                                    {
-                                        var srcBox = new ResourceRegion
-                                        {
-                                            Left = move.SourcePoint.X,
-                                            Top = move.SourcePoint.Y,
-                                            Front = 0,
-                                            Right = move.SourcePoint.X + _width,
-                                            Bottom = move.SourcePoint.Y + _height,
-                                            Back = 1
-                                        };
-
-                                        _device.ImmediateContext.CopySubresourceRegion(
-                                            screenTexture, 0, srcBox,
-                                            currentFrameTexture, 0,
-                                            move.DestinationRect.Left, move.DestinationRect.Top);
-                                    }
-                                }
-
-                                // Apply dirty rectangles
-                                for (int i = 0; i < dirtyCount; i++)
-                                {
-                                    var dirty = dirtyRects[i];
-                                    if (dirty.Right > dirty.Left && dirty.Bottom > dirty.Top)
-                                    {
-                                        var dirtyBox = new ResourceRegion
-                                        {
-                                            Left = dirty.Left,
-                                            Top = dirty.Top,
-                                            Front = 0,
-                                            Right = dirty.Right,
-                                            Bottom = dirty.Bottom,
-                                            Back = 1
-                                        };
-
-                                        _device.ImmediateContext.CopySubresourceRegion(
-                                            screenTexture, 0, dirtyBox,
-                                            currentFrameTexture, 0,
-                                            dirty.Left, dirty.Top);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // No metadata - full frame copy
-                                _device.ImmediateContext.CopyResource(screenTexture, currentFrameTexture);
-                            }
-
-                            // Save current frame as previous for next iteration
-                            _device.ImmediateContext.CopyResource(currentFrameTexture, previousFrameTexture);
-
-                            var dataPointer = TextureUtils.GetBGRAFromTexture(this._device.ImmediateContext,
-                            screenTexture, out int width, out int height, out int stride, out int dataLen);
-                            
-
-
-                            this.OnNewFrame?.Invoke(this, new ScreenFrameUnmanagedMemory()
-                            {
-
-                                Height = height,
-                                Width = width,
-                                Data = dataPointer.Handle,
-                                DataLength = dataLen,
-                                Type = FrameTypes.UnmanagedMemory,
-                                Format = PixelFormats.B8G8R8A8,
-                                Timestamp = TimeSpan.FromTicks(frameInfo.LastPresentTime),
-                                Stride = stride
-                            });
-
-                            dataPointer.Dispose();
-
-                            //var bitmap = CopyTextureToBitmap(texture);
-                            //OnFrameCaptured?.Invoke(bitmap);
-                            screenTexture.Dispose();
-                        }
-                    }
-
-                    _deskDupl.ReleaseFrame();
+                    Console.WriteLine($@"TryAcquireNextFrame {result} FAILED EXIT");
+                    return;
                 }
 
-                //Thread.Sleep(1000 / 60);
+                using (desktopResource)
+                {
+                    // Check for resolution changes
+                    bool resolutionChanged = CheckResolutionChange();
+                    if (resolutionChanged)
+                    {
+                        _deskDupl.ReleaseFrame();
+                        RecreateResources();
+                        continue; // Skip this frame, next one will have correct size
+                    }
+
+                    bool hasScreenUpdate = frameInfo.TotalMetadataBufferSize > 0 ||
+                                  frameInfo.LastPresentTime > 0 ||
+                                  frameInfo.AccumulatedFrames > 0;
+
+
+                    if (hasScreenUpdate)
+                    {
+                        using var screenTexture = desktopResource.QueryInterface<Texture2D>();
+
+                        // Check if we have move/dirty rect metadata
+                        bool hasMetadata = frameInfo.TotalMetadataBufferSize > 0;
+
+                        if (hasMetadata)
+                        {
+                            // Get move rectangles
+                            OutputDuplicateMoveRectangle[] moveRects = null;
+                            int moveCount = 0;
+
+                            if (frameInfo.TotalMetadataBufferSize > 0)
+                            {
+                                // Allocate max possible size for move rects
+                                int maxMoveRects = frameInfo.TotalMetadataBufferSize / Marshal.SizeOf(typeof(OutputDuplicateMoveRectangle));
+                                if (maxMoveRects > 0)
+                                {
+                                    moveRects = new OutputDuplicateMoveRectangle[maxMoveRects];
+                                    int moveSize;
+                                    var move_bufferSize = maxMoveRects * Marshal.SizeOf(typeof(OutputDuplicateMoveRectangle));
+                                    try
+                                    {
+                                        _deskDupl.GetFrameMoveRects(move_bufferSize, moveRects, out moveSize);
+                                        moveCount = moveSize / Marshal.SizeOf(typeof(OutputDuplicateMoveRectangle));
+                                    }
+                                    catch
+                                    {
+                                        moveCount = 0;
+                                    }
+                                }
+                            }
+
+                            // Get dirty rectangles
+                            RawRectangle[] dirtyRects = null;
+                            int dirtyCount = 0;
+
+                            // Allocate buffer for dirty rects (use total size as upper bound)
+                            int maxDirtyRects = Math.Max(1, frameInfo.TotalMetadataBufferSize / Marshal.SizeOf(typeof(RawRectangle)));
+                            dirtyRects = new RawRectangle[maxDirtyRects];
+                            var bufferSize = maxDirtyRects * Marshal.SizeOf(typeof(RawRectangle));
+
+                            try
+                            {
+                                _deskDupl.GetFrameDirtyRects(bufferSize, dirtyRects, out var dirtySize);
+                                dirtyCount = dirtySize / Marshal.SizeOf(typeof(Rectangle));
+                            }
+                            catch (SharpDXException ex)
+                            {
+                                // E_INVALIDARG means no dirty rects available
+                                if (ex.ResultCode.Code != unchecked((int)0x80070057))
+                                    throw;
+                                dirtyCount = 0;
+                            }
+
+                            // Start with previous frame
+                            _device.ImmediateContext.CopyResource(previousFrameTexture, currentFrameTexture);
+
+                            // Apply move rectangles
+                            for (int i = 0; i < moveCount; i++)
+                            {
+                                var move = moveRects[i];
+                                int _width = move.DestinationRect.Right - move.DestinationRect.Left;
+                                int _height = move.DestinationRect.Bottom - move.DestinationRect.Top;
+
+                                if (_width > 0 && _height > 0)
+                                {
+                                    var srcBox = new ResourceRegion
+                                    {
+                                        Left = move.SourcePoint.X,
+                                        Top = move.SourcePoint.Y,
+                                        Front = 0,
+                                        Right = move.SourcePoint.X + _width,
+                                        Bottom = move.SourcePoint.Y + _height,
+                                        Back = 1
+                                    };
+
+                                    _device.ImmediateContext.CopySubresourceRegion(
+                                        screenTexture, 0, srcBox,
+                                        currentFrameTexture, 0,
+                                        move.DestinationRect.Left, move.DestinationRect.Top);
+                                }
+                            }
+
+                            // Apply dirty rectangles
+                            for (int i = 0; i < dirtyCount; i++)
+                            {
+                                var dirty = dirtyRects[i];
+                                if (dirty.Right > dirty.Left && dirty.Bottom > dirty.Top)
+                                {
+                                    var dirtyBox = new ResourceRegion
+                                    {
+                                        Left = dirty.Left,
+                                        Top = dirty.Top,
+                                        Front = 0,
+                                        Right = dirty.Right,
+                                        Bottom = dirty.Bottom,
+                                        Back = 1
+                                    };
+
+                                    _device.ImmediateContext.CopySubresourceRegion(
+                                        screenTexture, 0, dirtyBox,
+                                        currentFrameTexture, 0,
+                                        dirty.Left, dirty.Top);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // No metadata - full frame copy
+                            _device.ImmediateContext.CopyResource(screenTexture, currentFrameTexture);
+                        }
+
+                        // Save current frame as previous for next iteration
+                        _device.ImmediateContext.CopyResource(currentFrameTexture, previousFrameTexture);
+
+                        var dataPointer = TextureUtils.GetBGRAFromTexture(this._device.ImmediateContext,
+                        screenTexture, out int width, out int height, out int stride, out int dataLen);
+
+
+                        Console.WriteLine("render frame");
+
+                        this.OnNewFrame?.Invoke(this, new ScreenFrameUnmanagedMemory()
+                        {
+
+                            Height = height,
+                            Width = width,
+                            Data = dataPointer.Handle,
+                            DataLength = dataLen,
+                            Type = FrameTypes.UnmanagedMemory,
+                            Format = PixelFormats.B8G8R8A8,
+                            Timestamp = TimeSpan.FromTicks(frameInfo.LastPresentTime),
+                            Stride = stride
+                        });
+
+                        dataPointer.Dispose();
+
+                        //var bitmap = CopyTextureToBitmap(texture);
+                        //OnFrameCaptured?.Invoke(bitmap);
+                        screenTexture.Dispose();
+                    }
+                }
+
+                _deskDupl.ReleaseFrame();
+
+                Thread.Sleep(1000);
             }
             catch (SharpDXException ex)
             {
-                if (ex.ResultCode.Failure)
-                {
-                    // Ignore timeout exceptions, handle others if needed
-                }
+                //Console.WriteLine($@"{ex.ToString()}");
+                //this.Stop();
+                //this.Start();
+                //if (ex.ResultCode.Failure)
+                //{
+                //    // Ignore timeout exceptions, handle others if needed
+                //}
             }
 
 
@@ -361,6 +403,5 @@ public class DxgiScreenCapture :  IScreenCapture, IDisposable
     {
         Stop();
         _deskDupl?.Dispose();
-        _device?.Dispose();
     }
 }

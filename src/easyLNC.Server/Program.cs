@@ -62,22 +62,28 @@ app.Lifetime.ApplicationStarted.Register(() =>
         var screenCaptureHandler = app.Services.GetRequiredService<IScreenCaptureHandler>();
         var streamHandler = app.Services.GetRequiredService<IScreenStreamHandler>();
         var screenInfoHandler = app.Services.GetRequiredService<IScreenInfoHandler>();
-        var coreEasyLNC = app.Services.GetRequiredService<CoreEasyLNC>();
-
+        //var coreEasyLNC = app.Services.GetRequiredService<CoreEasyLNC>();
+        
         while (true)
         {
+            try
+            {
+                screenCaptureHandler.Begin(screenInfoHandler.GetScreens().First(), out var streamCapture);
 
-            screenCaptureHandler.Begin(screenInfoHandler.GetScreens().First(), out var streamCapture);
-
-            streamHandler.Attach(streamCapture, out var streamInfo);
+                streamHandler.Attach(streamCapture, out var streamInfo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
 
             break;
 
-            Thread.Sleep(0);
+            //Thread.Sleep(0);
 
-            screenCaptureHandler?.End(streamCapture);
+            //screenCaptureHandler?.End(streamCapture);
 
-            Thread.Sleep(10);
+            //Thread.Sleep(10);
 
         }
 
